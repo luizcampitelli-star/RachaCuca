@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Racha Cuca · Multiplayer & Fases</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: linear-gradient(145deg, #0b1a33, #1a3a6b);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 28px 32px 36px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.08);
+            max-width: 560px;
+            width: 100%;
+            transition: 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        h1 {
+            color: #f0f6ff;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        h1 span {
+            background: rgba(255, 215, 0, 0.15);
+            padding: 0 12px;
+            border-radius: 60px;
+            font-size: 1.8rem;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #d6e4ff;
+            font-weight: 500;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .info-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .movimentos-box,
+        .level-box,
+        .players-box {
+            background: rgba(0, 0, 0, 0.35);
+            padding: 4px 14px;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #2a4b7a;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 5px 14px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 4px 0 #0f1f36;
+            letter-spacing: 0.3px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .btn-primary {
+            background: #f5b042;
+            color: #1d2a3f;
+            box-shadow: 0 4px 0 #a77b2a;
+        }
+
+        .btn-primary:hover {
+            background: #fccf6b;
+            transform: scale(1.02);
+        }
+
+        .btn-primary:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #a77b2a;
+        }
+
+        .btn-secondary {
+            background: #3d5f8a;
+            box-shadow: 0 4px 0 #1f3350;
+        }
+
+        .btn-secondary:hover {
+            background: #5478aa;
+            transform: scale(1.02);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #1f3350;
+        }
+
+        .btn-success {
+            background: #2e9b6b;
+            box-shadow: 0 4px 0 #1a5f41;
+        }
+
+        .btn-success:hover {
+            background: #3db87f;
+            transform: scale(1.02);
+        }
+
+        .btn-success:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #1a5f41;
+        }
+
+        .btn-danger {
+            background: #b54a4a;
+            box-shadow: 0 4px 0 #6d2a2a;
+        }
+
+        .btn-danger:hover {
+            background: #d15a5a;
+            transform: scale(1.02);
+        }
+
+        .btn-danger:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #6d2a2a;
+        }
+
+        .btn-sm {
+            padding: 3px 10px;
+            font-size: 0.75rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            background: #0d1b30;
+            padding: 12px;
+            border-radius: 28px;
+            box-shadow: inset 0 0 0 2px #263b5a, 0 12px 24px rgba(0, 0, 0, 0.6);
+            margin: 8px 0 12px;
+        }
+
+        .tile {
+            aspect-ratio: 1 / 1;
+            background: #2d4d7c;
+            color: white;
+            font-size: 2.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: 0.12s ease;
+            box-shadow: 0 6px 0 #0f1a2b, inset 0 -2px 0 rgba(255, 255, 255, 0.1);
+            user-select: none;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .tile:hover:not(.empty) {
+            transform: scale(1.02);
+            background: #3d66a0;
+        }
+
+        .tile:active:not(.empty) {
+            transform: scale(0.94);
+        }
+
+        .tile.empty {
+            background: transparent;
+            box-shadow: none;
+            cursor: default;
+            transform: none;
+        }
+
+        .tile.player1 {
+            border: 3px solid #f5b042;
+        }
+
+        .tile.player2 {
+            border: 3px solid #42b0f5;
+        }
+
+        .message-area {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f5d742;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 8px 14px;
+            border-radius: 60px;
+            display: inline-block;
+            min-height: 44px;
+            text-align: center;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            width: 100%;
+        }
+
+        .ranking-area {
+            margin-top: 14px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 24px;
+            padding: 12px 16px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(4px);
+        }
+
+        .ranking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #c8dfff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 4px;
+            margin-bottom: 6px;
+        }
+
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            max-height: 130px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .ranking-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .ranking-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .ranking-list::-webkit-scrollbar-thumb {
+            background: #3f66a0;
+            border-radius: 16px;
+        }
+
+        .rank-item {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 3px 12px 3px 16px;
+            border-radius: 40px;
+            color: #dce7ff;
+            font-size: 0.85rem;
+            font-weight: 400;
+            border-left: 3px solid #f5b042;
+        }
+
+        .rank-item .pos {
+            color: #f5b042;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+
+        .rank-item .score {
+            font-weight: 600;
+            color: #b8d0ff;
+        }
+
+        .empty-rank {
+            color: #7b96c0;
+            font-style: italic;
+            padding: 4px 0 2px 8px;
+            font-size: 0.85rem;
+        }
+
+        .multiplayer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 6px 0 4px;
+            flex-wrap: wrap;
+        }
+
+        .player-indicator {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .player-indicator.p1 {
+            background: rgba(245, 176, 66, 0.3);
+            color: #f5b042;
+            border: 1px solid rgba(245, 176, 66, 0.4);
+        }
+
+        .player-indicator.p2 {
+            background: rgba(66, 176, 245, 0.3);
+            color: #42b0f5;
+            border: 1px solid rgba(66, 176, 245, 0.4);
+        }
+
+        .footer-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 14px 10px 18px;
+            }
+
+            .tile {
+                font-size: 1.5rem;
+                border-radius: 14px;
+            }
+
+            .grid {
+                gap: 6px;
+                padding: 8px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 4px;
+            }
+
+            .info-group {
+                justify-content: center;
+            }
+
+            .btn-group {
+                justify-content: center;
+            }
+
+            .ranking-header {
+                font-size: 0.8rem;
+            }
+
+            .multiplayer-controls {
+                gap: 4px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🧩 <span>Racha Cuca</span></h1>
+
+        <div class="top-bar">
+            <div class="info-group">
+                <div class="movimentos-box" id="movimentosDisplay">Mov: 0</div>
+                <div class="level-box" id="levelDisplay">⭐ Nível 1</div>
+                <div class="players-box" id="playersDisplay">👥 1J</div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" id="btnNovoJogo">🔄 Novo</button>
+                <button class="btn btn-secondary btn-sm" id="btnResetRanking">🗑️ Reset</button>
+            </div>
+        </div>
+
+        <!-- Controles Multiplayer -->
+        <div class="multiplayer-controls">
+            <button class="btn btn-secondary btn-sm" id="btnAddPlayer">➕ Adicionar Jogador</button>
+            <button class="btn btn-danger btn-sm" id="btnRemovePlayer">➖ Remover Jogador</button>
+            <span id="turnIndicator" class="player-indicator p1">Vez: Jogador 1</span>
+        </div>
+
+        <div class="grid" id="grid"></div>
+
+        <div class="message-area" id="mensagem"></div>
+
+        <!-- RANKING / CLASSIFICAÇÃO -->
+        <div class="ranking-area">
+            <div class="ranking-header">
+                <span>🏆 MELHORES PONTUAÇÕES</span>
+                <span style="font-size:0.7rem; opacity:0.6;">(menos movimentos)</span>
+            </div>
+            <div class="ranking-list" id="rankingList">
+                <div class="empty-rank">Nenhuma pontuação registrada</div>
+            </div>
+        </div>
+
+        <div class="footer-actions">
+            <button class="btn btn-secondary btn-sm" id="btnLimparRanking">Limpar ranking</button>
+            <button class="btn btn-success btn-sm" id="btnProximoNivel">⬆ Próximo Nível</button>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            // ---------- CONFIG ----------
+            const TAMANHO = 4;
+            const TOTAL_PECAS = TAMANHO * TAMANHO;
+            const MAX_PLAYERS = 4;
+            const LEVELS = [
+                { moves: 0, label: '1' },
+                { moves: 15, label: '2' },
+                { moves: 25, label: '3' },
+                { moves: 35, label: '4' },
+                { moves: 50, label: '5' },
+                { moves: 70, label: '6' },
+                { moves: 100, label: '7' },
+                { moves: 150, label: '8' },
+                { moves: 200, label: '9' },
+                { moves: 300, label: '10' },
+            ];
+
+            // Estado do jogo
+            let pecas = [];
+            let vazioIndex = TOTAL_PECAS - 1;
+            let movimentos = 0;
+            let jogoFinalizado = false;
+            let currentLevel = 0;
+
+            // Multiplayer
+            let players = 1;
+            let currentPlayer = 0;
+            let playerMoves = [0, 0, 0, 0];
+            let gameStarted = false;
+
+            // DOM
+            const gridEl = document.getElementById('grid');
+            const movimentosEl = document.getElementById('movimentosDisplay');
+            const levelEl = document.getElementById('levelDisplay');
+            const playersEl = document.getElementById('playersDisplay');
+            const turnIndicatorEl = document.getElementById('turnIndicator');
+            const mensagemEl = document.getElementById('mensagem');
+            const btnNovo = document.getElementById('btnNovoJogo');
+            const btnResetRanking = document.getElementById('btnResetRanking');
+            const btnLimparRanking = document.getElementById('btnLimparRanking');
+            const btnProximoNivel = document.getElementById('btnProximoNivel');
+            const btnAddPlayer = document.getElementById('btnAddPlayer');
+            const btnRemovePlayer = document.getElementById('btnRemovePlayer');
+            const rankingListEl = document.getElementById('rankingList');
+
+            // ---------- RANKING (localStorage) ----------
+            const STORAGE_KEY = 'rachacuca_ranking_multi';
+
+            function carregarRanking() {
+                try {
+                    const data = localStorage.getItem(STORAGE_KEY);
+                    if (data) return JSON.parse(data);
+                } catch (_) { }
+                return [];
+            }
+
+            function salvarRanking(ranking) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(ranking));
+            }
+
+            function adicionarPontuacao(movimentosFeitos, level) {
+                if (movimentosFeitos === 0) return;
+
+                let ranking = carregarRanking();
+                ranking.push({ moves: movimentosFeitos, level: level + 1, players: players });
+                ranking.sort((a, b) => a.moves - b.moves);
+                if (ranking.length > 10) ranking = ranking.slice(0, 10);
+                salvarRanking(ranking);
+                renderizarRanking();
+            }
+
+            function renderizarRanking() {
+                const ranking = carregarRanking();
+                rankingListEl.innerHTML = '';
+                if (ranking.length === 0) {
+                    rankingListEl.innerHTML = '<div class="empty-rank">Nenhuma pontuação registrada</div>';
+                    return;
+                }
+                ranking.forEach((entry, idx) => {
+                    const item = document.createElement('div');
+                    item.className = 'rank-item';
+                    item.innerHTML = `
+                            <span><span class="pos">#${idx + 1}</span> N${entry.level} · ${entry.moves} mov.</span>
+                            <span class="score">${entry.moves}</span>
+                        `;
+                    rankingListEl.appendChild(item);
+                });
+            }
+
+            function limparRanking() {
+                salvarRanking([]);
+                renderizarRanking();
+            }
+
+            // ---------- AUXILIARES ----------
+            function embaralharArray(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            }
+
+            function isSolucionavel(arr) {
+                let inversoes = 0;
+                const linhaVazio = Math.floor(arr.indexOf(0) / TAMANHO) + 1;
+                for (let i = 0; i < arr.length; i++) {
+                    if (arr[i] === 0) continue;
+                    for (let j = i + 1; j < arr.length; j++) {
+                        if (arr[j] === 0) continue;
+                        if (arr[i] > arr[j]) inversoes++;
+                    }
+                }
+                if (TAMANHO % 2 === 1) return inversoes % 2 === 0;
+                return (inversoes + linhaVazio) % 2 === 0;
+            }
+
+            function gerarEstadoSolucionavel() {
+                let arr = Array.from({ length: TOTAL_PECAS }, (_, i) => (i < TOTAL_PECAS - 1 ? i + 1 : 0));
+                let tentativas = 0;
+                do {
+                    embaralharArray(arr);
+                    tentativas++;
+                } while (!isSolucionavel(arr) && tentativas < 1000);
+
+                if (!isSolucionavel(arr)) {
+                    arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15];
+                    if (isSolucionavel(arr)) {
+                        [arr[0], arr[1]] = [arr[1], arr[0]];
+                    }
+                }
+                return arr;
+            }
+
+            // ---------- JOGO ----------
+            function iniciarJogo() {
+                const estado = gerarEstadoSolucionavel();
+                pecas = [...estado];
+                vazioIndex = pecas.indexOf(0);
+                movimentos = 0;
+                jogoFinalizado = false;
+                gameStarted = true;
+                playerMoves = Array(MAX_PLAYERS).fill(0);
+                currentPlayer = 0;
+                mensagemEl.textContent = '';
+                atualizarTurnIndicator();
+                renderizar();
+                atualizarInfo();
+            }
+
+            function renderizar() {
+                gridEl.innerHTML = '';
+                for (let i = 0; i < pecas.length; i++) {
+                    const valor = pecas[i];
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    if (valor === 0) {
+                        tile.classList.add('empty');
+                        tile.textContent = '';
+                    } else {
+                        tile.textContent = valor;
+                    }
+                    tile.dataset.index = i;
+                    tile.addEventListener('click', () => onTileClick(i));
+                    gridEl.appendChild(tile);
+                }
+            }
+
+            function atualizarInfo() {
+                movimentosEl.textContent = `Mov: ${movimentos}`;
+                levelEl.textContent = `⭐ Nível ${LEVELS[currentLevel].label}`;
+                playersEl.textContent = `👥 ${players}J`;
+            }
+
+            function atualizarTurnIndicator() {
+                if (players === 1) {
+                    turnIndicatorEl.textContent = '🎯 Modo Solo';
+                    turnIndicatorEl.className = 'player-indicator p1';
+                } else {
+                    turnIndicatorEl.textContent = `Vez: Jogador ${currentPlayer + 1}`;
+                    turnIndicatorEl.className = `player-indicator ${currentPlayer === 0 ? 'p1' : 'p2'}`;
+                }
+            }
+
+            function verificarVitoria() {
+                for (let i = 0; i < TOTAL_PECAS - 1; i++) {
+                    if (pecas[i] !== i + 1) return false;
+                }
+                return pecas[TOTAL_PECAS - 1] === 0;
+            }
+
+            function moverPeca(index) {
+                if (jogoFinalizado || !gameStarted) return false;
+
+                const linhaVazio = Math.floor(vazioIndex / TAMANHO);
+                const colVazio = vazioIndex % TAMANHO;
+                const linhaPeca = Math.floor(index / TAMANHO);
+                const colPeca = index % TAMANHO;
+
+                const diffLinha = Math.abs(linhaVazio - linhaPeca);
+                const diffCol = Math.abs(colVazio - colPeca);
+
+                if ((diffLinha === 1 && diffCol === 0) || (diffLinha === 0 && diffCol === 1)) {
+                    pecas[vazioIndex] = pecas[index];
+                    pecas[index] = 0;
+                    vazioIndex = index;
+                    movimentos++;
+                    playerMoves[currentPlayer]++;
+
+                    // Verifica se atingiu o limite de movimentos do nível
+                    const levelLimit = LEVELS[currentLevel].moves;
+                    if (levelLimit > 0 && movimentos >= levelLimit) {
+                        jogoFinalizado = true;
+                        mensagemEl.textContent = `⏰ Fim do nível! Limite de ${levelLimit} movimentos atingido.`;
+                        if (movimentos > 0) {
+                            adicionarPontuacao(movimentos, currentLevel);
+                        }
+                    }
+
+                    atualizarInfo();
+                    renderizar();
+
+                    if (verificarVitoria()) {
+                        jogoFinalizado = true;
+                        mensagemEl.textContent = `🎉 Parabéns! Nível ${LEVELS[currentLevel].label} completo! 🎉`;
+                        if (movimentos > 0) {
+                            adicionarPontuacao(movimentos, currentLevel);
+                        }
+                    }
+
+                    // Alterna jogador (se multiplayer)
+                    if (players > 1 && !jogoFinalizado) {
+                        currentPlayer = (currentPlayer + 1) % players;
+                        atualizarTurnIndicator();
+                    }
+                    return true;
+                }
+                return false;
+            }
+
+            function onTileClick(index) {
+                if (jogoFinalizado) return;
+                if (pecas[index] === 0) return;
+                moverPeca(index);
+            }
+
+            // ---------- NÍVEIS ----------
+            function proximoNivel() {
+                if (currentLevel < LEVELS.length - 1) {
+                    currentLevel++;
+                    iniciarJogo();
+                    mensagemEl.textContent = `🚀 Nível ${LEVELS[currentLevel].label} iniciado!`;
+                } else {
+                    mensagemEl.textContent = '🏆 Você completou todos os níveis! Parabéns!';
+                }
+            }
+
+            // ---------- MULTIPLAYER ----------
+            function adicionarJogador() {
+                if (players < MAX_PLAYERS) {
+                    players++;
+                    playerMoves = Array(MAX_PLAYERS).fill(0);
+                    currentPlayer = 0;
+                    atualizarInfo();
+                    atualizarTurnIndicator();
+                    mensagemEl.textContent = `👤 Jogador ${players} adicionado!`;
+                    if (!gameStarted) iniciarJogo();
+                } else {
+                    mensagemEl.textContent = '⚠️ Máximo de 4 jogadores!';
+                }
+            }
+
+            function removerJogador() {
+                if (players > 1) {
+                    players--;
+                    playerMoves = Array(MAX_PLAYERS).fill(0);
+                    currentPlayer = 0;
+                    atualizarInfo();
+                    atualizarTurnIndicator();
+                    mensagemEl.textContent = `👤 Jogador removido!`;
+                    if (!gameStarted) iniciarJogo();
+                } else {
+                    mensagemEl.textContent = '⚠️ Mínimo de 1 jogador!';
+                }
+            }
+
+            // ---------- EVENTOS ----------
+            btnNovo.addEventListener('click', () => {
+                currentLevel = 0;
+                iniciarJogo();
+                mensagemEl.textContent = '🔄 Novo jogo iniciado!';
+            });
+
+            btnResetRanking.addEventListener('click', () => {
+                if (confirm('Resetar ranking? Todas as pontuações serão apagadas.')) {
+                    limparRanking();
+                }
+            });
+
+            btnLimparRanking.addEventListener('click', () => {
+                if (confirm('Limpar ranking? As melhores pontuações serão removidas.')) {
+                    limparRanking();
+                }
+            });
+
+            btnProximoNivel.addEventListener('click', proximoNivel);
+
+            btnAddPlayer.addEventListener('click', adicionarJogador);
+
+            btnRemovePlayer.addEventListener('click', removerJogador);
+
+            // Teclado (setas)
+            document.addEventListener('keydown', (e) => {
+                if (jogoFinalizado || !gameStarted) return;
+                const key = e.key;
+                let targetIndex = -1;
+                const linha = Math.floor(vazioIndex / TAMANHO);
+                const col = vazioIndex % TAMANHO;
+
+                if (key === 'ArrowUp' && linha < TAMANHO - 1) {
+                    targetIndex = vazioIndex + TAMANHO;
+                } else if (key === 'ArrowDown' && linha > 0) {
+                    targetIndex = vazioIndex - TAMANHO;
+                } else if (key === 'ArrowLeft' && col < TAMANHO - 1) {
+                    targetIndex = vazioIndex + 1;
+                } else if (key === 'ArrowRight' && col > 0) {
+                    targetIndex = vazioIndex - 1;
+                }
+
+                if (targetIndex !== -1 && targetIndex >= 0 && targetIndex < TOTAL_PECAS) {
+                    e.preventDefault();
+                    moverPeca(targetIndex);
+                }
+            });
+
+            // ---------- INICIALIZAÇÃO ----------
+            renderizarRanking();
+            iniciarJogo();
+
+        })();
+    </script>
+</body>
+
+</html>
